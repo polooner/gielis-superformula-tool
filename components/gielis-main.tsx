@@ -60,6 +60,8 @@ const GielisSuperfomula = () => {
   const [accordionValue, setAccordionValue] = useState<string[]>([
     "management",
   ]);
+  const [extraOffsetX, setExtraOffsetX] = useState(0);
+  const [extraOffsetY, setExtraOffsetY] = useState(0);
 
   const [editingShapeId, setEditingShapeId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -205,7 +207,7 @@ const GielisSuperfomula = () => {
       },
       path: "",
       color: `hsl(${Math.random() * 360}, 70%, 50%)`,
-      position: { x: 0, y: 0 },
+      position: { x: 0 + extraOffsetX, y: 0 + extraOffsetY },
     };
     const points = calculatePoints(newShape.params);
     newShape.path = pointsToPath(points);
@@ -315,6 +317,37 @@ const GielisSuperfomula = () => {
                     <Button onClick={addNewShape} className="w-full">
                       Add New Shape
                     </Button>
+                    <p className="whitespace-nowrap">
+                      Place at current position and:
+                    </p>
+                    <div className="flex items-center space-x-2 mb-4">
+                      <div className="flex flex-col space-y-2">
+                        <Label>&rarr; extra x-offset </Label>
+                        <Input
+                          value={extraOffsetX}
+                          onChange={(e) =>
+                            setExtraOffsetX(parseInt(e.target.value))
+                          }
+                          type="number"
+                          id="placeAtPosition"
+                          placeholder="pick"
+                          className="flex-grow"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <Label>&uarr; extra y-offset </Label>
+                        <Input
+                          value={extraOffsetY}
+                          onChange={(e) =>
+                            setExtraOffsetY(parseInt(e.target.value))
+                          }
+                          type="number"
+                          id="placeAtPosition"
+                          placeholder="pick"
+                          className="flex-grow"
+                        />
+                      </div>
+                    </div>
                     {shapes.map((shape) => (
                       <div
                         key={shape.id}
