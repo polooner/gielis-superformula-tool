@@ -328,7 +328,7 @@ const GielisSuperfomula = () => {
                 <AccordionTrigger className="flex justify-between">
                   <span>Shape Management</span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="p-1">
                   <div className="space-y-4 h-full flex flex-col ">
                     <Button
                       onClick={addNewShape}
