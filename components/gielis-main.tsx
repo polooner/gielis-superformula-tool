@@ -563,10 +563,37 @@ const ActiveShapeControlColorPopover = ({
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [tempColor, setTempColor] = useState(shape.color);
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
   const handlePopoverInteraction = (event: React.MouseEvent) => {
     event.stopPropagation();
+  };
+
+  const handleColorChange = (color: { hex: string }) => {
+    setTempColor(color.hex);
+    if (!isDragging) {
+      setShapes((prevShapes) =>
+        prevShapes.map((s) =>
+          s.id === shape.id ? { ...s, color: color.hex } : s
+        )
+      );
+    }
+  };
+
+  //
+  const handleMouseDown = () => {
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setShapes((prevShapes) =>
+      prevShapes.map((s) =>
+        s.id === shape.id ? { ...s, color: tempColor } : s
+      )
+    );
   };
 
   return (
@@ -588,14 +615,11 @@ const ActiveShapeControlColorPopover = ({
           onMouseUp={handlePopoverInteraction}
         >
           <ChromePicker
-            color={shape.color}
-            onChange={(color) => {
-              setShapes((prevShapes) =>
-                prevShapes.map((s) =>
-                  s.id === shape.id ? { ...s, color: color.hex } : s
-                )
-              );
-            }}
+            color={tempColor}
+            onChange={handleColorChange}
+            // @ts-expect-error idk
+            onMouseDown={() => handleMouseDown()}
+            onMouseUp={handleMouseUp}
           />
         </div>
       </PopoverContent>
