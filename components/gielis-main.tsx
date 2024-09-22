@@ -367,30 +367,29 @@ const GielisSuperfomula = () => {
                         />
                       </div>
                     </div>
-                    <ScrollArea className="flex-grow max-h-[100px] overflow-y-auto space-y-4">
-                      <div className=" space-y-4 ">
-                        {shapes.map((shape) => (
-                          <div
+
+                    <div className=" space-y-4 flex-grow max-h-[100px] overflow-y-auto space-y-4">
+                      {shapes.map((shape) => (
+                        <div
+                          key={shape.id}
+                          className="flex items-center justify-between"
+                        >
+                          <ActiveShapeControlButton
+                            setShapes={setShapes}
                             key={shape.id}
-                            className="flex items-center justify-between"
-                          >
-                            <ActiveShapeControlButton
-                              setShapes={setShapes}
-                              key={shape.id}
-                              activeShapeId={activeShapeId}
-                              setActiveShapeId={setActiveShapeId}
-                              shape={shape}
-                              removeShape={removeShape}
-                              updateShapeId={updateShapeId}
-                              isEditing={editingShapeId === shape.id}
-                              setIsEditing={(isEditing) =>
-                                setEditingShapeId(isEditing ? shape.id : null)
-                              }
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
+                            activeShapeId={activeShapeId}
+                            setActiveShapeId={setActiveShapeId}
+                            shape={shape}
+                            removeShape={removeShape}
+                            updateShapeId={updateShapeId}
+                            isEditing={editingShapeId === shape.id}
+                            setIsEditing={(isEditing) =>
+                              setEditingShapeId(isEditing ? shape.id : null)
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
