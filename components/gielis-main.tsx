@@ -23,6 +23,8 @@ import {
   Pencil,
 } from "lucide-react";
 import Link from "next/link";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { ChromePicker } from "react-color";
 
 interface Shape {
   id: string;
@@ -319,6 +321,7 @@ const GielisSuperfomula = () => {
                         className="flex items-center justify-between"
                       >
                         <ActiveShapeControlButton
+                          setShapes={setShapes}
                           key={shape.id}
                           activeShapeId={activeShapeId}
                           setActiveShapeId={setActiveShapeId}
@@ -496,6 +499,7 @@ const ActiveShapeControlButton = ({
   updateShapeId,
   isEditing,
   setIsEditing,
+  setShapes,
 }: {
   activeShapeId: string | null;
   setActiveShapeId: (id: string) => void;
@@ -504,6 +508,7 @@ const ActiveShapeControlButton = ({
   updateShapeId: ({ id, newName }: { id: string; newName: string }) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 }) => {
   return (
     <>
@@ -517,9 +522,11 @@ const ActiveShapeControlButton = ({
           onBlur={() => setIsEditing(false)}
           autoFocus
         />
+      ) : activeShapeId === shape.id ? (
+        <ActiveShapeControlColorPopover shape={shape} setShapes={setShapes} />
       ) : (
         <Button
-          variant={activeShapeId === shape.id ? "default" : "outline"}
+          variant="outline"
           onClick={() => setActiveShapeId(shape.id)}
           className="flex-grow mr-2"
         >
@@ -545,5 +552,53 @@ const ActiveShapeControlButton = ({
         </Button>
       </div>
     </>
+  );
+};
+
+const ActiveShapeControlColorPopover = ({
+  shape,
+  setShapes,
+}: {
+  shape: Shape;
+  setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const popoverContentRef = useRef<HTMLDivElement>(null);
+
+  const handlePopoverInteraction = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          className="w-full flex-grow mr-2"
+          style={{ backgroundColor: shape.color }}
+          variant="outline"
+        >
+          {shape.id}
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent asChild className="p-0 w-fit">
+        <div
+          ref={popoverContentRef}
+          onMouseDown={handlePopoverInteraction}
+          onMouseUp={handlePopoverInteraction}
+        >
+          <ChromePicker
+            color={shape.color}
+            onChange={(color) => {
+              setShapes((prevShapes) =>
+                prevShapes.map((s) =>
+                  s.id === shape.id ? { ...s, color: color.hex } : s
+                )
+              );
+            }}
+          />
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
