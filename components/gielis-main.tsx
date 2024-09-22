@@ -22,6 +22,7 @@ import {
   Trash2,
   Pencil,
 } from "lucide-react";
+import Link from "next/link";
 
 interface Shape {
   id: string;
@@ -231,6 +232,15 @@ const GielisSuperfomula = () => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-gray-100">
+      <div className="absolute top-0 right-2 ml-auto h-full">
+        <Link
+          className="ml-auto underline text-black"
+          href="/3dgielis"
+          target="_blank"
+        >
+          Try the 3D formula version &rarr;
+        </Link>
+      </div>
       <svg
         ref={svgRef}
         width="100%"
