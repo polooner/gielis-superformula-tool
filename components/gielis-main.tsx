@@ -272,7 +272,7 @@ const GielisSuperfomula = () => {
         strokeNoiseStrength: 0,
       },
       path: "",
-      color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+      color: color,
       position: {
         x:
           0 +
