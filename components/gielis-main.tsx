@@ -522,25 +522,27 @@ const ActiveShapeControlButton = ({
           onClick={() => setActiveShapeId(shape.id)}
           className="flex-grow mr-2"
         >
-          Shape {shape.id}
+          {shape.id}
         </Button>
       )}
-      <Button
-        size="icon"
-        variant="outline"
-        onClick={() => {
-          setIsEditing(!isEditing);
-        }}
-      >
-        <Pencil className="h-4 w-4" />
-      </Button>
-      <Button
-        size="icon"
-        variant="destructive"
-        onClick={() => removeShape(shape.id)}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center ml-auto space-x-1">
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => {
+            setIsEditing(!isEditing);
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="destructive"
+          onClick={() => removeShape(shape.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
     </>
   );
 };
