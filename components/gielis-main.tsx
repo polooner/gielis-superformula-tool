@@ -20,6 +20,7 @@ import {
   MoveHorizontal,
   MoveVertical,
   Trash2,
+  Pencil,
 } from "lucide-react";
 
 interface Shape {
@@ -56,6 +57,7 @@ const GielisSuperfomula = () => {
   const [accordionValue, setAccordionValue] = useState<string[]>([
     "management",
   ]);
+  const [isEditing, setIsEditing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -223,6 +225,17 @@ const GielisSuperfomula = () => {
     }
   };
 
+  const updateShapeId = ({ id, newName }: { id: string; newName: string }) => {
+    setShapes((prevShapes) =>
+      prevShapes.map((shape) => {
+        if (shape.id === id) {
+          return { ...shape, id: newName };
+        }
+        return shape;
+      })
+    );
+  };
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-gray-100">
       <svg
@@ -302,22 +315,15 @@ const GielisSuperfomula = () => {
                         key={shape.id}
                         className="flex items-center justify-between"
                       >
-                        <Button
-                          variant={
-                            activeShapeId === shape.id ? "default" : "outline"
-                          }
-                          onClick={() => setActiveShapeId(shape.id)}
-                          className="flex-grow mr-2"
-                        >
-                          Shape {shape.id}
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          onClick={() => removeShape(shape.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <ActiveShapeControlButton
+                          activeShapeId={activeShapeId}
+                          setActiveShapeId={setActiveShapeId}
+                          shape={shape}
+                          removeShape={removeShape}
+                          updateShapeId={updateShapeId}
+                          isEditing={isEditing}
+                          setIsEditing={setIsEditing}
+                        />
                       </div>
                     ))}
                   </div>
@@ -475,3 +481,61 @@ const GielisSuperfomula = () => {
 };
 
 export default GielisSuperfomula;
+
+const ActiveShapeControlButton = ({
+  activeShapeId,
+  setActiveShapeId,
+  shape,
+  removeShape,
+  updateShapeId,
+  isEditing,
+  setIsEditing,
+}: {
+  activeShapeId: string | null;
+  setActiveShapeId: (id: string) => void;
+  shape: Shape;
+  removeShape: (id: string) => void;
+  updateShapeId: ({ id, newName }: { id: string; newName: string }) => void;
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
+}) => {
+  return (
+    <>
+      {isEditing ? (
+        <Input
+          value={shape.id}
+          onChange={(e) => {
+            console.log(e.target.value);
+            updateShapeId({ id: shape.id, newName: e.target.value });
+          }}
+          onBlur={() => setIsEditing(false)}
+          autoFocus
+        />
+      ) : (
+        <Button
+          variant={activeShapeId === shape.id ? "default" : "outline"}
+          onClick={() => setActiveShapeId(shape.id)}
+          className="flex-grow mr-2"
+        >
+          Shape {shape.id}
+        </Button>
+      )}
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={() => {
+          setIsEditing(!isEditing);
+        }}
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        size="icon"
+        variant="destructive"
+        onClick={() => removeShape(shape.id)}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </>
+  );
+};
