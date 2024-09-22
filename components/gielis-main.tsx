@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ChromePicker } from "react-color";
+import { ChromePicker, CirclePicker } from "react-color";
 import { Separator } from "./ui/separator";
 
 interface Shape {
@@ -114,7 +114,7 @@ const hexToRgb = (hex: string) => {
 const GielisSuperfomula = () => {
   const [shapes, setShapes] = useState<Shape[]>([]);
   const [activeShapeId, setActiveShapeId] = useState<string | null>(null);
-
+  const [color, setColor] = useState("#000000");
   const [cardSize, setCardSize] = useState({ width: 320, height: 600 });
   const [cardPosition, setCardPosition] = useState({ x: 20, y: 20 });
   const [zoom, setZoom] = useState(1);
@@ -433,7 +433,7 @@ const GielisSuperfomula = () => {
               className="mb-4"
             >
               <AccordionItem value="management">
-                <AccordionTrigger className="flex justify-between">
+                <AccordionTrigger className="flex justify-between font-bold">
                   <span>Shape Management</span>
                 </AccordionTrigger>
                 <AccordionContent className="p-1">
@@ -475,6 +475,23 @@ const GielisSuperfomula = () => {
                         />
                       </div>
                     </div>
+                    <p>color:</p>
+                    <CirclePicker
+                      color={color}
+                      onChange={(color) => setColor(color.hex)}
+                      circleSize={12}
+                      colors={[
+                        "#000000", // black
+                        "#D3D3D3", // light gray
+                        "#FFFFFF", // white
+                        "#808080", // neutral
+                        "#00000000", // transparent
+                        "#008000", // green
+                        "#90EE90", // light green
+                        "#ADD8E6", // light blue
+                        "#0000FF", // blue
+                      ]}
+                    />
                     <Separator />
                     <Label>Shapes</Label>
                     <div className="flex-grow max-h-[200px] overflow-y-auto space-y-4 scrollbar-grey-thumb p-1">
@@ -562,7 +579,7 @@ const GielisSuperfomula = () => {
                   shapes.find((shape) => shape.id === activeShapeId) && (
                     <>
                       <div className="space-y-2">
-                        <Label>Shape Position</Label>
+                        <Label className="font-bold">Shape Position</Label>
                         <div className="flex space-x-2">
                           <div className="flex-1 space-y-1">
                             <Label htmlFor="positionX">X</Label>
