@@ -317,7 +317,7 @@ const GielisSuperfomula = () => {
               Gielis Superformula Controls
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow overflow-hidden p-4 flex flex-col">
+          <CardContent className="flex-grow overflow-hidden overflow-y-auto p-4 pt-0 flex flex-col">
             <Accordion
               type="multiple"
               value={accordionValue}
@@ -329,7 +329,7 @@ const GielisSuperfomula = () => {
                   <span>Shape Management</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4">
+                  <div className="space-y-4 h-full flex flex-col ">
                     <Button
                       onClick={addNewShape}
                       className="w-full whitespace-pre-wrap"
@@ -367,26 +367,30 @@ const GielisSuperfomula = () => {
                         />
                       </div>
                     </div>
-                    {shapes.map((shape) => (
-                      <div
-                        key={shape.id}
-                        className="flex items-center justify-between"
-                      >
-                        <ActiveShapeControlButton
-                          setShapes={setShapes}
-                          key={shape.id}
-                          activeShapeId={activeShapeId}
-                          setActiveShapeId={setActiveShapeId}
-                          shape={shape}
-                          removeShape={removeShape}
-                          updateShapeId={updateShapeId}
-                          isEditing={editingShapeId === shape.id}
-                          setIsEditing={(isEditing) =>
-                            setEditingShapeId(isEditing ? shape.id : null)
-                          }
-                        />
+                    <ScrollArea className="flex-grow max-h-[100px] overflow-y-auto space-y-4">
+                      <div className=" space-y-4 ">
+                        {shapes.map((shape) => (
+                          <div
+                            key={shape.id}
+                            className="flex items-center justify-between"
+                          >
+                            <ActiveShapeControlButton
+                              setShapes={setShapes}
+                              key={shape.id}
+                              activeShapeId={activeShapeId}
+                              setActiveShapeId={setActiveShapeId}
+                              shape={shape}
+                              removeShape={removeShape}
+                              updateShapeId={updateShapeId}
+                              isEditing={editingShapeId === shape.id}
+                              setIsEditing={(isEditing) =>
+                                setEditingShapeId(isEditing ? shape.id : null)
+                              }
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </ScrollArea>
                   </div>
                 </AccordionContent>
               </AccordionItem>
