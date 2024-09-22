@@ -57,7 +57,8 @@ const GielisSuperfomula = () => {
   const [accordionValue, setAccordionValue] = useState<string[]>([
     "management",
   ]);
-  const [isEditing, setIsEditing] = useState(false);
+
+  const [editingShapeId, setEditingShapeId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -216,6 +217,7 @@ const GielisSuperfomula = () => {
     newShape.path = pointsToPath(points);
     setShapes((prevShapes) => [...prevShapes, newShape]);
     setActiveShapeId(newShape.id);
+    setEditingShapeId(null);
   };
 
   const removeShape = (id: string) => {
@@ -316,13 +318,16 @@ const GielisSuperfomula = () => {
                         className="flex items-center justify-between"
                       >
                         <ActiveShapeControlButton
+                          key={shape.id}
                           activeShapeId={activeShapeId}
                           setActiveShapeId={setActiveShapeId}
                           shape={shape}
                           removeShape={removeShape}
                           updateShapeId={updateShapeId}
-                          isEditing={isEditing}
-                          setIsEditing={setIsEditing}
+                          isEditing={editingShapeId === shape.id}
+                          setIsEditing={(isEditing) =>
+                            setEditingShapeId(isEditing ? shape.id : null)
+                          }
                         />
                       </div>
                     ))}
