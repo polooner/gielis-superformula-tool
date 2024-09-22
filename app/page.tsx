@@ -1,3 +1,5 @@
+import GielisSuperfomula from "@/components/gielis-main";
+
 export default function Home() {
-  return <main>yessir</main>;
+  return <GielisSuperfomula />;
 }
