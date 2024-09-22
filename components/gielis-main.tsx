@@ -207,11 +207,27 @@ const GielisSuperfomula = () => {
       },
       path: "",
       color: `hsl(${Math.random() * 360}, 70%, 50%)`,
-      position: { x: 0 + extraOffsetX, y: 0 + extraOffsetY },
+      position: {
+        x:
+          0 +
+          extraOffsetX +
+          (activeShapeId
+            ? shapes.find((shape) => shape.id === activeShapeId)?.position.x ??
+              0
+            : 0),
+        y:
+          0 +
+          extraOffsetY +
+          (activeShapeId
+            ? shapes.find((shape) => shape.id === activeShapeId)?.position.y ??
+              0
+            : 0),
+      },
     };
     const points = calculatePoints(newShape.params);
     newShape.path = pointsToPath(points);
     setShapes((prevShapes) => [...prevShapes, newShape]);
+
     setActiveShapeId(newShape.id);
     setEditingShapeId(null);
   };
@@ -314,11 +330,14 @@ const GielisSuperfomula = () => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
-                    <Button onClick={addNewShape} className="w-full">
+                    <Button
+                      onClick={addNewShape}
+                      className="w-full whitespace-pre-wrap"
+                    >
                       Add New Shape
                     </Button>
-                    <p className="whitespace-nowrap">
-                      Place at current position and:
+                    <p className="whitespace-pre-wrap">
+                      Place at current active shape position and:
                     </p>
                     <div className="flex items-center space-x-2 mb-4">
                       <div className="flex flex-col space-y-2">
