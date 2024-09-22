@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ChromePicker } from "react-color";
+import { Separator } from "./ui/separator";
 
 interface Shape {
   id: string;
@@ -40,6 +41,10 @@ interface Shape {
     points: number;
     fillOpacity: number;
     strokeWidth: number;
+    fillNoiseScale: number;
+    fillNoiseStrength: number;
+    strokeNoiseScale: number;
+    strokeNoiseStrength: number;
   };
   path: string;
   color: string;
@@ -48,6 +53,63 @@ interface Shape {
     y: number;
   };
 }
+
+const noise2D = (x: number, y: number, scale: number) => {
+  const X = Math.floor(x * scale);
+  const Y = Math.floor(y * scale);
+  return (Math.sin(X * 12.9898 + Y * 78.233) * 43758.5453) % 1;
+};
+
+// Add this function to create a noise pattern
+const createNoisePattern = (
+  scale: number,
+  strength: number,
+  baseColor: string
+) => {
+  const patternSize = 100;
+  const canvas = document.createElement("canvas");
+  canvas.width = patternSize;
+  canvas.height = patternSize;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+
+  const imageData = ctx.createImageData(patternSize, patternSize);
+  const baseColorRGB = hexToRgb(baseColor);
+
+  for (let y = 0; y < patternSize; y++) {
+    for (let x = 0; x < patternSize; x++) {
+      const i = (y * patternSize + x) * 4;
+      const noiseValue = noise2D(x, y, scale) * strength;
+      imageData.data[i] = Math.max(
+        0,
+        Math.min(255, baseColorRGB.r + noiseValue * 255)
+      );
+      imageData.data[i + 1] = Math.max(
+        0,
+        Math.min(255, baseColorRGB.g + noiseValue * 255)
+      );
+      imageData.data[i + 2] = Math.max(
+        0,
+        Math.min(255, baseColorRGB.b + noiseValue * 255)
+      );
+      imageData.data[i + 3] = 255;
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+  return canvas.toDataURL();
+};
+
+const hexToRgb = (hex: string) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : { r: 0, g: 0, b: 0 };
+};
 
 const GielisSuperfomula = () => {
   const [shapes, setShapes] = useState<Shape[]>([]);
@@ -204,6 +266,10 @@ const GielisSuperfomula = () => {
         points: 1000,
         fillOpacity: 0.5,
         strokeWidth: 1,
+        fillNoiseScale: 0,
+        fillNoiseStrength: 0,
+        strokeNoiseScale: 0,
+        strokeNoiseStrength: 0,
       },
       path: "",
       color: `hsl(${Math.random() * 360}, 70%, 50%)`,
@@ -270,6 +336,48 @@ const GielisSuperfomula = () => {
         onMouseDown={handleSvgMouseDown}
         style={{ cursor: isDragging ? "grabbing" : "move" }}
       >
+        <defs>
+          {shapes.map((shape) => (
+            <React.Fragment key={`patterns-${shape.id}`}>
+              <pattern
+                id={`fillNoisePattern-${shape.id}`}
+                patternUnits="userSpaceOnUse"
+                width="100"
+                height="100"
+              >
+                <image
+                  href={createNoisePattern(
+                    shape.params.fillNoiseScale,
+                    shape.params.fillNoiseStrength,
+                    shape.color
+                  )}
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="100"
+                />
+              </pattern>
+              <pattern
+                id={`strokeNoisePattern-${shape.id}`}
+                patternUnits="userSpaceOnUse"
+                width="100"
+                height="100"
+              >
+                <image
+                  href={createNoisePattern(
+                    shape.params.strokeNoiseScale,
+                    shape.params.strokeNoiseStrength,
+                    "black"
+                  )}
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="100"
+                />
+              </pattern>
+            </React.Fragment>
+          ))}
+        </defs>
         <g transform={`scale(${zoom}) translate(${pan.x}, ${pan.y})`}>
           {shapes.map((shape) => (
             <g
@@ -280,9 +388,9 @@ const GielisSuperfomula = () => {
             >
               <path
                 d={shape.path}
-                fill={shape.color}
+                fill={`url(#fillNoisePattern-${shape.id})`}
                 fillOpacity={shape.params.fillOpacity}
-                stroke="black"
+                stroke={`url(#strokeNoisePattern-${shape.id})`}
                 strokeWidth={shape.params.strokeWidth}
               />
             </g>
@@ -367,8 +475,9 @@ const GielisSuperfomula = () => {
                         />
                       </div>
                     </div>
-
-                    <div className=" space-y-4 flex-grow max-h-[100px] overflow-y-auto space-y-4">
+                    <Separator />
+                    <Label>Shapes</Label>
+                    <div className="flex-grow max-h-[200px] overflow-y-auto space-y-4 scrollbar-grey-thumb p-1">
                       {shapes.map((shape) => (
                         <div
                           key={shape.id}
@@ -394,7 +503,7 @@ const GielisSuperfomula = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <ScrollArea className="flex-grow">
+            <ScrollArea className="flex-grow p-1">
               <div className="space-y-4 pr-4">
                 <div className="flex justify-between items-center">
                   <Label>Zoom</Label>
@@ -566,47 +675,65 @@ const ActiveShapeControlButton = ({
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 }) => {
   return (
-    <>
-      {isEditing ? (
-        <Input
-          value={shape.id}
-          onChange={(e) => {
-            console.log(e.target.value);
-            updateShapeId({ id: shape.id, newName: e.target.value });
-          }}
-          onBlur={() => setIsEditing(false)}
-          autoFocus
-        />
-      ) : activeShapeId === shape.id ? (
-        <ActiveShapeControlColorPopover shape={shape} setShapes={setShapes} />
-      ) : (
-        <Button
-          variant="outline"
-          onClick={() => setActiveShapeId(shape.id)}
-          className="flex-grow mr-2"
-        >
-          {shape.id}
-        </Button>
-      )}
-      <div className="flex items-center ml-auto space-x-1">
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => {
-            setIsEditing(!isEditing);
-          }}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="destructive"
-          onClick={() => removeShape(shape.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+    <Card className="w-full bg-transparent p-1">
+      <div className="flex items-center">
+        {isEditing ? (
+          <Input
+            value={shape.id}
+            onChange={(e) => {
+              console.log(e.target.value);
+              updateShapeId({ id: shape.id, newName: e.target.value });
+            }}
+            onBlur={() => setIsEditing(false)}
+            autoFocus
+          />
+        ) : activeShapeId === shape.id ? (
+          <ActiveShapeControlColorPopover shape={shape} setShapes={setShapes} />
+        ) : (
+          <Button
+            variant="outline"
+            onClick={() => setActiveShapeId(shape.id)}
+            className="flex-grow mr-2"
+          >
+            {shape.id}
+          </Button>
+        )}
+        <div className="flex items-center ml-auto space-x-1">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => {
+              setIsEditing(!isEditing);
+            }}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="destructive"
+            onClick={() => removeShape(shape.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-    </>
+      {/* <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="effects" className="border-none">
+          <AccordionTrigger>Effects</AccordionTrigger>
+          <AccordionContent>
+            <div className="flex items-center space-x-2">
+              <Label>Fill Noise Scale</Label>
+              <Input
+                value={shape.params.fillNoiseScale}
+                onChange={(e) =>
+                  updateParam("fillNoiseScale", parseFloat(e.target.value))
+                }
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion> */}
+    </Card>
   );
 };
 
