@@ -291,11 +291,6 @@ const GielisSuperfomula = () => {
               <AccordionItem value="management">
                 <AccordionTrigger className="flex justify-between">
                   <span>Shape Management</span>
-                  {accordionValue.includes("management") ? (
-                    <Minus className="h-4 w-4" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
