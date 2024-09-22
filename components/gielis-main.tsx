@@ -692,65 +692,47 @@ const ActiveShapeControlButton = ({
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 }) => {
   return (
-    <Card className="w-full bg-transparent p-1">
-      <div className="flex items-center">
-        {isEditing ? (
-          <Input
-            value={shape.id}
-            onChange={(e) => {
-              console.log(e.target.value);
-              updateShapeId({ id: shape.id, newName: e.target.value });
-            }}
-            onBlur={() => setIsEditing(false)}
-            autoFocus
-          />
-        ) : activeShapeId === shape.id ? (
-          <ActiveShapeControlColorPopover shape={shape} setShapes={setShapes} />
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => setActiveShapeId(shape.id)}
-            className="flex-grow mr-2"
-          >
-            {shape.id}
-          </Button>
-        )}
-        <div className="flex items-center ml-auto space-x-1">
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={() => {
-              setIsEditing(!isEditing);
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="destructive"
-            onClick={() => removeShape(shape.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="flex items-center w-full">
+      {isEditing ? (
+        <Input
+          value={shape.id}
+          onChange={(e) => {
+            console.log(e.target.value);
+            updateShapeId({ id: shape.id, newName: e.target.value });
+          }}
+          onBlur={() => setIsEditing(false)}
+          autoFocus
+        />
+      ) : activeShapeId === shape.id ? (
+        <ActiveShapeControlColorPopover shape={shape} setShapes={setShapes} />
+      ) : (
+        <Button
+          variant="outline"
+          onClick={() => setActiveShapeId(shape.id)}
+          className="flex-grow mr-2"
+        >
+          {shape.id}
+        </Button>
+      )}
+      <div className="flex items-center ml-auto space-x-1">
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => {
+            setIsEditing(!isEditing);
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="destructive"
+          onClick={() => removeShape(shape.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
-      {/* <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="effects" className="border-none">
-          <AccordionTrigger>Effects</AccordionTrigger>
-          <AccordionContent>
-            <div className="flex items-center space-x-2">
-              <Label>Fill Noise Scale</Label>
-              <Input
-                value={shape.params.fillNoiseScale}
-                onChange={(e) =>
-                  updateParam("fillNoiseScale", parseFloat(e.target.value))
-                }
-              />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion> */}
-    </Card>
+    </div>
   );
 };
 
