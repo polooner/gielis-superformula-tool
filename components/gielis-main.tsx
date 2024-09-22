@@ -49,7 +49,7 @@ interface Shape {
 const GielisSuperfomula = () => {
   const [shapes, setShapes] = useState<Shape[]>([]);
   const [activeShapeId, setActiveShapeId] = useState<string | null>(null);
-  //   const [size, setSize] = useState({ width: 0, height: 0 });
+
   const [cardSize, setCardSize] = useState({ width: 320, height: 600 });
   const [cardPosition, setCardPosition] = useState({ x: 20, y: 20 });
   const [zoom, setZoom] = useState(1);
@@ -63,15 +63,6 @@ const GielisSuperfomula = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-
-  //   useEffect(() => {
-  //     const updateSize = () => {
-  //       setSize({ width: window.innerWidth, height: window.innerHeight });
-  //     };
-  //     window.addEventListener("resize", updateSize);
-  //     updateSize();
-  //     return () => window.removeEventListener("resize", updateSize);
-  //   }, []);
 
   const calculatePoints = useCallback((params: Shape["params"]) => {
     const points = [];
